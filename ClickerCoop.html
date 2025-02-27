@@ -551,8 +551,31 @@ const elements = {
 };
 
 // Upgrades e achievements permanecem iguais ao seu código original
-const upgrades = [/* ... seu array de upgrades original ... */];
-const achievements = [/* ... seu array de achievements original ... */];
+const upgrades = [
+    { id: 'click-power', name: 'Poder de Clique', description: 'Aumenta o valor de cada clique', basePrice: 10, level: 0, maxLevel: 10, effect: level => level + 1, priceIncrease: 1.5, forPlayer: null },
+    { id: 'auto-clicker', name: 'Auto Clicker', description: 'Clica automaticamente a cada segundo', basePrice: 50, level: 0, maxLevel: 5, effect: level => level, priceIncrease: 2, forPlayer: null },
+    { id: 'coin-boost', name: 'Boost de Moedas', description: 'Aumenta as moedas ganhas por nível', basePrice: 30, level: 0, maxLevel: 5, effect: level => 1 + level * 0.2, priceIncrease: 1.8, forPlayer: null },
+    { id: 'progress-boost', name: 'Boost de Progresso', description: 'Reduz o aumento da dificuldade entre níveis', basePrice: 100, level: 0, maxLevel: 3, effect: level => 1.25 - (level * 0.05), priceIncrease: 2.5, forPlayer: null },
+    { id: 'player1-power', name: 'Poder Jogador 1', description: 'Aumenta o poder de clique do Jogador 1', basePrice: 15, level: 0, maxLevel: 5, effect: level => level + 1, priceIncrease: 1.6, forPlayer: 'player1', coop: true },
+    { id: 'player2-power', name: 'Poder Jogador 2', description: 'Aumenta o poder de clique do Jogador 2', basePrice: 15, level: 0, maxLevel: 5, effect: level => level + 1, priceIncrease: 1.6, forPlayer: 'player2', coop: true },
+    { id: 'synergy-boost', name: 'Sinergia de Equipe', description: 'Aumenta o bônus quando ambos jogadores estão ativos', basePrice: 75, level: 0, maxLevel: 3, effect: level => 0.2 + (level * 0.1), priceIncrease: 2, forPlayer: null, coop: true, synergy: true }
+];
+
+const achievements = [
+    { id: 'first-level', name: 'Primeiro Nível', description: 'Complete o nível 1', unlocked: false, requirement: () => level > 1, reward: 5 },
+    { id: 'level-5', name: 'Persistente', description: 'Alcance o nível 5', unlocked: false, requirement: () => level >= 5, reward: 20 },
+    { id: 'level-10', name: 'Dedicado', description: 'Alcance o nível 10', unlocked: false, requirement: () => level >= 10, reward: 50 },
+    { id: 'level-25', name: 'Mestre Clicker', description: 'Alcance o nível 25', unlocked: false, requirement: () => level >= 25, reward: 150 },
+    { id: 'coins-100', name: 'Colecionador', description: 'Acumule 100 moedas', unlocked: false, requirement: () => coins >= 100, reward: 10 },
+    { id: 'upgrade-max', name: 'Aprimorado', description: 'Maximize um upgrade', unlocked: false, requirement: () => upgrades.some(upgrade => upgrade.level >= upgrade.maxLevel), reward: 75 },
+    { id: 'team-balance', name: 'Equilíbrio de Equipe', description: 'Tenha contribuição balanceada entre jogadores (45-55%)', unlocked: false, requirement: () => {
+        const total = players.player1.clicks + players.player2.clicks;
+        if (total === 0) return false;
+        const p1Percent = (players.player1.clicks / total) * 100;
+        return p1Percent >= 45 && p1Percent <= 55;
+    }, reward: 30, coop: true },
+    { id: 'team-synergy', name: 'Sinergia Perfeita', description: 'Complete um nível com ambos jogadores contribuindo', unlocked: false, requirement: () => players.player1.isActive && players.player2.isActive, reward: 40, coop: true }
+];
 
 function initGame() {
     updateDisplays();
@@ -560,7 +583,6 @@ function initGame() {
     renderAchievements();
     updateModeDisplay();
 
-    // Event Listeners
     elements.player1Area.addEventListener('click', (e) => {
         e.stopPropagation();
         playerClick('player1', e);
@@ -651,7 +673,8 @@ function createClickEffect(event, playerKey) {
 }
 
 function updateProgressBar() {
-    elements.progressBar.style.width = `${Math.min(100, (clicks / targetClicks) * 100)}%`;
+    const progress = (clicks / targetClicks) * 100;
+    elements.progressBar.style.width = `${Math.max(0, Math.min(100, progress))}%`;
 }
 
 function updatePlayerContributions() {
@@ -703,16 +726,20 @@ function updateModeDisplay() {
     updateDisplays();
     renderUpgrades();
     renderAchievements();
+    updateProgressBar(); // Garante que a barra reflita o modo
 }
 
 function levelUp() {
     level++;
-    clicks = 0;
+    clicks = 0; // Resetar os cliques
+    
     const progressBoost = getUpgradeEffect('progress-boost');
     targetClicks = Math.ceil(targetClicks * progressBoost);
+    
     const coinBoost = getUpgradeEffect('coin-boost');
     const coinsAwarded = Math.floor(level * 5 * coinBoost);
     coins += coinsAwarded;
+    
     players.player1.clicks = 0;
     players.player2.clicks = 0;
 
@@ -720,7 +747,8 @@ function levelUp() {
     elements.levelDisplay.classList.add('level-up');
     setTimeout(() => elements.levelDisplay.classList.remove('level-up'), 1000);
 
-    updateProgressBar();
+    updateProgressBar(); // Forçar a barra a reiniciar
+    updatePlayerContributions();
     updateDisplays();
     checkAchievements();
 }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clicker Master - Modo Cooperativo</title>
+  <title>Jogo Clicker Avançado</title>
   <style>
     body {
       margin: 0;
@@ -18,7 +18,7 @@
 
     .game-container {
       width: 90%;
-      max-width: 1000px;
+      max-width: 800px;
       margin: 20px auto;
       text-align: center;
     }
@@ -57,14 +57,8 @@
       margin: 5px;
     }
 
-    .click-areas {
-      display: flex;
-      gap: 20px;
-      margin-bottom: 20px;
-    }
-
     .click-area {
-      flex: 1;
+      width: 100%;
       height: 200px;
       background-color: #fff;
       border-radius: 10px;
@@ -74,50 +68,12 @@
       cursor: pointer;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       transition: transform 0.1s;
-      position: relative;
-      overflow: hidden;
+      margin-bottom: 20px;
     }
 
     .click-area:active {
       transform: scale(0.98);
       background-color: #f8f8f8;
-    }
-
-    .player-identifier {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      padding: 5px 10px;
-      border-radius: 5px;
-      font-weight: bold;
-      color: white;
-    }
-
-    .player1 .player-identifier {
-      background-color: #2196F3;
-    }
-
-    .player2 .player-identifier {
-      background-color: #FF5722;
-    }
-
-    .click-effect {
-      position: absolute;
-      pointer-events: none;
-      border-radius: 50%;
-      animation: clickEffect 0.5s forwards;
-      opacity: 0.6;
-    }
-
-    @keyframes clickEffect {
-      0% {
-        transform: scale(0);
-        opacity: 0.7;
-      }
-      100% {
-        transform: scale(1);
-        opacity: 0;
-      }
     }
 
     h1 {
@@ -221,184 +177,16 @@
       box-shadow: 0 2px 10px rgba(0,0,0,0.2);
       opacity: 0;
       transition: opacity 0.3s;
-      z-index: 100;
     }
     
     .notification.show {
       opacity: 1;
-    }
-
-    .player-stats {
-      display: flex;
-      gap: 20px;
-      margin-bottom: 20px;
-    }
-
-    .player-stat {
-      flex: 1;
-      background-color: #fff;
-      border-radius: 10px;
-      padding: 15px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    .player-stat.player1 {
-      border-top: 5px solid #2196F3;
-    }
-
-    .player-stat.player2 {
-      border-top: 5px solid #FF5722;
-    }
-
-    .player-stat-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .player-stat-content {
-      display: flex;
-      gap: 10px;
-    }
-
-    .player-stat-item {
-      flex: 1;
-      text-align: center;
-      background-color: #f9f9f9;
-      padding: 10px;
-      border-radius: 5px;
-    }
-
-    .player-stat-label {
-      font-size: 0.8em;
-      color: #666;
-    }
-
-    .player-stat-value {
-      font-size: 1.2em;
-      font-weight: bold;
-    }
-
-    .player-contribution {
-      height: 5px;
-      background-color: #e0e0e0;
-      border-radius: 5px;
-      overflow: hidden;
-      margin-top: 10px;
-    }
-
-    .player1-contribution {
-      height: 100%;
-      background-color: #2196F3;
-      float: left;
-    }
-
-    .player2-contribution {
-      height: 100%;
-      background-color: #FF5722;
-      float: right;
-    }
-
-    .mode-selection {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin: 10px 0;
-    }
-
-    .mode-button {
-      padding: 8px 15px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background-color 0.2s;
-    }
-
-    .mode-button.active {
-      background-color: #4CAF50;
-      color: white;
-    }
-
-    .mode-button:not(.active) {
-      background-color: #e0e0e0;
-      color: #333;
-    }
-
-    .tab-buttons {
-      display: flex;
-      margin-bottom: 15px;
-    }
-
-    .tab-button {
-      flex: 1;
-      padding: 10px;
-      background-color: #e0e0e0;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background-color 0.2s;
-    }
-
-    .tab-button:first-child {
-      border-top-left-radius: 5px;
-      border-bottom-left-radius: 5px;
-    }
-
-    .tab-button:last-child {
-      border-top-right-radius: 5px;
-      border-bottom-right-radius: 5px;
-    }
-
-    .tab-button.active {
-      background-color: #4CAF50;
-      color: white;
-    }
-
-    .tab-content {
-      display: none;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    .synergy-upgrade {
-      background-color: #e3f2fd;
-      border-left: 4px solid #2196F3;
-    }
-
-    /* Media Queries for responsive design */
-    @media (max-width: 768px) {
-      .click-areas {
-        flex-direction: column;
-      }
-      
-      .player-stats {
-        flex-direction: column;
-      }
-    }
-
-    .team-bonus {
-      background-color: #e8f5e9;
-      border-radius: 5px;
-      padding: 10px;
-      margin: 10px 0;
-      text-align: center;
-      font-weight: bold;
-      border: 1px dashed #4CAF50;
     }
   </style>
 </head>
 <body>
   <div class="game-container">
     <h1>Clicker Master</h1>
-
-    <div class="mode-selection">
-      <button class="mode-button" id="solo-mode-button">Modo Solo</button>
-      <button class="mode-button active" id="coop-mode-button">Modo Cooperativo</button>
-    </div>
     
     <div class="stats">
       <div class="stat-box">
@@ -411,7 +199,7 @@
       </div>
       <div class="stat-box">
         <h3>Meta</h3>
-        <div id="target">20</div>
+        <div id="target">10</div>
       </div>
       <div class="stat-box">
         <h3>Moedas</h3>
@@ -426,81 +214,23 @@
     <div class="progress-container">
       <div class="progress-bar" id="progress-bar"></div>
     </div>
-
-    <div class="team-bonus" id="team-bonus">
-      Bônus de Equipe: +20% de poder de clique quando ambos jogadores estão ativos!
-    </div>
     
-    <div class="player-stats">
-      <div class="player-stat player1">
-        <div class="player-stat-header">
-          <h3>Jogador 1</h3>
-          <div>Cliques: <span id="player1-clicks">0</span></div>
-        </div>
-        <div class="player-stat-content">
-          <div class="player-stat-item">
-            <div class="player-stat-label">Poder</div>
-            <div class="player-stat-value" id="player1-power">1</div>
-          </div>
-          <div class="player-stat-item">
-            <div class="player-stat-label">Contribuição</div>
-            <div class="player-stat-value" id="player1-contribution">0%</div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="player-stat player2">
-        <div class="player-stat-header">
-          <h3>Jogador 2</h3>
-          <div>Cliques: <span id="player2-clicks">0</span></div>
-        </div>
-        <div class="player-stat-content">
-          <div class="player-stat-item">
-            <div class="player-stat-label">Poder</div>
-            <div class="player-stat-value" id="player2-power">1</div>
-          </div>
-          <div class="player-stat-item">
-            <div class="player-stat-label">Contribuição</div>
-            <div class="player-stat-value" id="player2-contribution">0%</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="player-contribution">
-      <div class="player1-contribution" id="player1-contribution-bar" style="width: 50%"></div>
-      <div class="player2-contribution" id="player2-contribution-bar" style="width: 50%"></div>
-    </div>
-    
-    <div class="click-areas">
-      <div class="click-area player1" id="player1-area">
-        <div class="player-identifier">Jogador 1 (Q)</div>
-        Clique aqui ou pressione Q!
-      </div>
-      
-      <div class="click-area player2" id="player2-area">
-        <div class="player-identifier">Jogador 2 (P)</div>
-        Clique aqui ou pressione P!
-      </div>
+    <div class="click-area" id="click-area">
+      Clique aqui!
     </div>
     
     <div class="game-sections">
       <div class="section">
-        <div class="tab-buttons">
-          <button class="tab-button active" data-tab="upgrades">Upgrades</button>
-          <button class="tab-button" data-tab="achievements">Objetivos</button>
+        <h2>Upgrades</h2>
+        <div id="upgrades-container">
+          <!-- Upgrades will be added here dynamically -->
         </div>
-        
-        <div class="tab-content active" id="upgrades">
-          <div id="upgrades-container">
-            <!-- Upgrades will be added here dynamically -->
-          </div>
-        </div>
-        
-        <div class="tab-content" id="achievements">
-          <div id="achievements-container">
-            <!-- Achievements will be added here dynamically -->
-          </div>
+      </div>
+      
+      <div class="section">
+        <h2>Objetivos</h2>
+        <div id="achievements-container">
+          <!-- Achievements will be added here dynamically -->
         </div>
       </div>
     </div>
@@ -512,30 +242,9 @@
     // Game state
     let clicks = 0;
     let level = 1;
-    let targetClicks = 20; // Increased for cooperative mode
+    let targetClicks = 10; // Initial requirement
     let coins = 0;
     let clickPower = 1;
-    let isCoopMode = true;
-    
-    // Player stats
-    const players = {
-      player1: {
-        clicks: 0,
-        power: 1,
-        key: 'Q',
-        keyCode: 81,
-        lastClickTime: 0,
-        isActive: false
-      },
-      player2: {
-        clicks: 0,
-        power: 1,
-        key: 'P',
-        keyCode: 80,
-        lastClickTime: 0,
-        isActive: false
-      }
-    };
     
     // DOM elements
     const progressBar = document.getElementById('progress-bar');
@@ -544,25 +253,11 @@
     const targetDisplay = document.getElementById('target');
     const coinsDisplay = document.getElementById('coins');
     const clickPowerDisplay = document.getElementById('click-power');
-    const player1Area = document.getElementById('player1-area');
-    const player2Area = document.getElementById('player2-area');
-    const player1Clicks = document.getElementById('player1-clicks');
-    const player2Clicks = document.getElementById('player2-clicks');
-    const player1Power = document.getElementById('player1-power');
-    const player2Power = document.getElementById('player2-power');
-    const player1Contribution = document.getElementById('player1-contribution');
-    const player2Contribution = document.getElementById('player2-contribution');
-    const player1ContributionBar = document.getElementById('player1-contribution-bar');
-    const player2ContributionBar = document.getElementById('player2-contribution-bar');
-    const teamBonus = document.getElementById('team-bonus');
+    const clickArea = document.getElementById('click-area');
     const gameContainer = document.querySelector('.game-container');
     const upgradesContainer = document.getElementById('upgrades-container');
     const achievementsContainer = document.getElementById('achievements-container');
     const notification = document.getElementById('notification');
-    const soloModeButton = document.getElementById('solo-mode-button');
-    const coopModeButton = document.getElementById('coop-mode-button');
-    const playerStats = document.querySelector('.player-stats');
-    const clickAreas = document.querySelector('.click-areas');
     
     // Upgrades definition
     const upgrades = [
@@ -574,8 +269,7 @@
         level: 0,
         maxLevel: 10,
         effect: level => level + 1,
-        priceIncrease: 1.5,
-        forPlayer: null // Affects both players
+        priceIncrease: 1.5
       },
       {
         id: 'auto-clicker',
@@ -585,8 +279,7 @@
         level: 0,
         maxLevel: 5,
         effect: level => level,
-        priceIncrease: 2,
-        forPlayer: null // Affects both players
+        priceIncrease: 2
       },
       {
         id: 'coin-boost',
@@ -596,8 +289,7 @@
         level: 0,
         maxLevel: 5,
         effect: level => 1 + level * 0.2, // 20% increase per level
-        priceIncrease: 1.8,
-        forPlayer: null // Affects both players
+        priceIncrease: 1.8
       },
       {
         id: 'progress-boost',
@@ -607,45 +299,7 @@
         level: 0,
         maxLevel: 3,
         effect: level => 1.25 - (level * 0.05), // Reduces from 1.25 to 1.10
-        priceIncrease: 2.5,
-        forPlayer: null // Affects both players
-      },
-      {
-        id: 'player1-power',
-        name: 'Poder Jogador 1',
-        description: 'Aumenta o poder de clique do Jogador 1',
-        basePrice: 15,
-        level: 0,
-        maxLevel: 5,
-        effect: level => level + 1,
-        priceIncrease: 1.6,
-        forPlayer: 'player1',
-        coop: true // Only available in coop mode
-      },
-      {
-        id: 'player2-power',
-        name: 'Poder Jogador 2',
-        description: 'Aumenta o poder de clique do Jogador 2',
-        basePrice: 15,
-        level: 0,
-        maxLevel: 5,
-        effect: level => level + 1,
-        priceIncrease: 1.6,
-        forPlayer: 'player2',
-        coop: true // Only available in coop mode
-      },
-      {
-        id: 'synergy-boost',
-        name: 'Sinergia de Equipe',
-        description: 'Aumenta o bônus quando ambos jogadores estão ativos',
-        basePrice: 75,
-        level: 0,
-        maxLevel: 3,
-        effect: level => 0.2 + (level * 0.1), // Increases team bonus from 20% to 50%
-        priceIncrease: 2,
-        forPlayer: null,
-        coop: true, // Only available in coop mode
-        synergy: true // Special synergy upgrade
+        priceIncrease: 2.5
       }
     ];
     
@@ -698,29 +352,6 @@
         unlocked: false,
         requirement: () => upgrades.some(upgrade => upgrade.level >= upgrade.maxLevel),
         reward: 75
-      },
-      {
-        id: 'team-balance',
-        name: 'Equilíbrio de Equipe',
-        description: 'Tenha contribuição balanceada entre jogadores (45-55%)',
-        unlocked: false,
-        requirement: () => {
-          const total = players.player1.clicks + players.player2.clicks;
-          if (total === 0) return false;
-          const p1Percent = (players.player1.clicks / total) * 100;
-          return p1Percent >= 45 && p1Percent <= 55;
-        },
-        reward: 30,
-        coop: true
-      },
-      {
-        id: 'team-synergy',
-        name: 'Sinergia Perfeita',
-        description: 'Complete um nível com ambos jogadores contribuindo',
-        unlocked: false,
-        requirement: () => players.player1.isActive && players.player2.isActive,
-        reward: 40,
-        coop: true
       }
     ];
     
@@ -729,99 +360,21 @@
       updateDisplays();
       renderUpgrades();
       renderAchievements();
-      updateModeDisplay();
       
-      // Add click events for click areas
-      player1Area.addEventListener('click', (e) => {
-        e.stopPropagation();
-        playerClick('player1', e);
-      });
-      
-      player2Area.addEventListener('click', (e) => {
-        e.stopPropagation();
-        playerClick('player2', e);
-      });
-      
-      // Add keyboard controls
-      document.addEventListener('keydown', (e) => {
-        if (e.keyCode === players.player1.keyCode) {
-          playerClick('player1');
-        } else if (e.keyCode === players.player2.keyCode) {
-          playerClick('player2');
-        }
-      });
-      
-      // Mode selection buttons
-      soloModeButton.addEventListener('click', () => {
-        isCoopMode = false;
-        updateModeDisplay();
-      });
-      
-      coopModeButton.addEventListener('click', () => {
-        isCoopMode = true;
-        updateModeDisplay();
-      });
-      
-      // Tab switching
-      document.querySelectorAll('.tab-button').forEach(button => {
-        button.addEventListener('click', () => {
-          // Remove active class from all buttons and tabs
-          document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-          document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-          
-          // Add active class to clicked button and corresponding tab
-          button.classList.add('active');
-          document.getElementById(button.dataset.tab).classList.add('active');
-        });
-      });
+      // Add click events
+      document.body.addEventListener('click', handleClick);
       
       // Start auto-clicker timer
       setInterval(runAutoClicker, 1000);
       
       // Start achievement check timer
       setInterval(checkAchievements, 2000);
-      
-      // Check player activity timer
-      setInterval(checkPlayerActivity, 5000);
     }
     
-    // Player click handler
-    function playerClick(playerKey, event) {
-      if (!isCoopMode && playerKey === 'player2') return; // In solo mode, only player 1 can click
-      
-      const player = players[playerKey];
-      player.lastClickTime = Date.now();
-      player.isActive = true;
-      
-      // Apply power
-      const clickValue = player.power;
-      player.clicks += clickValue;
-      clicks += clickValue;
-      
-      // Apply team bonus if both players are active
-      if (isCoopMode && players.player1.isActive && players.player2.isActive) {
-        const synergyBoost = getUpgradeEffect('synergy-boost');
-        const teamBonus = clickValue * synergyBoost;
-        clicks += teamBonus;
-      }
-      
-      // Create click effect animation if event exists
-      if (event) {
-        createClickEffect(event, playerKey);
-      } else {
-        // For keyboard clicks, create effect in the center of the corresponding area
-        const area = document.getElementById(`${playerKey}-area`);
-        const rect = area.getBoundingClientRect();
-        const dummyEvent = {
-          clientX: rect.left + rect.width / 2,
-          clientY: rect.top + rect.height / 2,
-          target: area
-        };
-        createClickEffect(dummyEvent, playerKey);
-      }
-      
+    // Handle click
+    function handleClick(event) {
+      clicks += clickPower;
       updateProgressBar();
-      updatePlayerContributions();
       updateDisplays();
       
       // Check if target reached
@@ -830,55 +383,10 @@
       }
     }
     
-    // Create click effect animation
-    function createClickEffect(event, playerKey) {
-      const effect = document.createElement('div');
-      effect.classList.add('click-effect');
-      
-      // Position effect at click coordinates relative to target
-      const rect = event.target.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      
-      effect.style.left = `${x}px`;
-      effect.style.top = `${y}px`;
-      effect.style.width = '50px';
-      effect.style.height = '50px';
-      
-      // Set color based on player
-      if (playerKey === 'player1') {
-        effect.style.backgroundColor = '#2196F3';
-      } else {
-        effect.style.backgroundColor = '#FF5722';
-      }
-      
-      event.target.appendChild(effect);
-      
-      // Remove effect after animation
-      setTimeout(() => {
-        effect.remove();
-      }, 500);
-    }
-    
     // Update progress bar
     function updateProgressBar() {
       const progress = (clicks / targetClicks) * 100;
       progressBar.style.width = `${Math.min(100, progress)}%`;
-    }
-    
-    // Update player contributions
-    function updatePlayerContributions() {
-      const totalClicks = players.player1.clicks + players.player2.clicks;
-      if (totalClicks === 0) return;
-      
-      const p1Percent = Math.round((players.player1.clicks / totalClicks) * 100);
-      const p2Percent = 100 - p1Percent;
-      
-      player1Contribution.textContent = p1Percent + '%';
-      player2Contribution.textContent = p2Percent + '%';
-      
-      player1ContributionBar.style.width = p1Percent + '%';
-      player2ContributionBar.style.width = p2Percent + '%';
     }
     
     // Update display elements
@@ -888,40 +396,185 @@
       targetDisplay.textContent = Math.ceil(targetClicks);
       coinsDisplay.textContent = Math.floor(coins);
       clickPowerDisplay.textContent = clickPower;
+    }
+    
+    // Level up
+    function levelUp() {
+      level++;
       
-      player1Clicks.textContent = Math.floor(players.player1.clicks);
-      player2Clicks.textContent = Math.floor(players.player2.clicks);
-      player1Power.textContent = players.player1.power;
-      player2Power.textContent = players.player2.power;
+      // Apply visual effect
+      gameContainer.classList.add('level-up');
+      setTimeout(() => {
+        gameContainer.classList.remove('level-up');
+      }, 1000);
       
-      // Update the team bonus text
-      if (isCoopMode) {
-        const synergyBoost = getUpgradeEffect('synergy-boost');
-        teamBonus.textContent = `Bônus de Equipe: +${Math.round(synergyBoost * 100)}% de poder quando ambos jogadores estão ativos!`;
+      // Award coins
+      const coinBoost = getUpgradeEffect('coin-boost');
+      const coinsAwarded = Math.round(level * 5 * coinBoost);
+      coins += coinsAwarded;
+      
+      // Show notification
+      showNotification(`Nível ${level} alcançado! +${coinsAwarded} moedas`);
+      
+      // Reset clicks
+      clicks = 0;
+      
+      // Increase target with potential reduction from progress-boost
+      const difficultyCurve = getUpgradeEffect('progress-boost');
+      targetClicks = Math.ceil(targetClicks * difficultyCurve);
+      
+      // Update displays
+      updateProgressBar();
+      updateDisplays();
+      renderUpgrades(); // Re-render upgrades in case any have new availability
+      
+      // Check achievements after level up
+      checkAchievements();
+    }
+    
+    // Render upgrades
+    function renderUpgrades() {
+      upgradesContainer.innerHTML = '';
+      
+      upgrades.forEach(upgrade => {
+        const price = getUpgradePrice(upgrade);
+        const canAfford = coins >= price;
+        const maxedOut = upgrade.level >= upgrade.maxLevel;
+        
+        const upgradeElement = document.createElement('div');
+        upgradeElement.className = `upgrade-item ${(!canAfford || maxedOut) ? 'disabled' : ''}`;
+        
+        upgradeElement.innerHTML = `
+          <div class="upgrade-info">
+            <div><strong>${upgrade.name}</strong> <span class="upgrade-level">(Nível ${upgrade.level}/${upgrade.maxLevel})</span></div>
+            <div>${upgrade.description}</div>
+          </div>
+          <button class="buy-button" ${(!canAfford || maxedOut) ? 'disabled' : ''}>${maxedOut ? 'MAX' : price + ' 🪙'}</button>
+        `;
+        
+        // Add click event only if not maxed and can afford
+        if (!maxedOut && canAfford) {
+          upgradeElement.querySelector('.buy-button').addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent triggering the global click
+            buyUpgrade(upgrade.id);
+          });
+        }
+        
+        upgradesContainer.appendChild(upgradeElement);
+      });
+    }
+    
+    // Render achievements
+    function renderAchievements() {
+      achievementsContainer.innerHTML = '';
+      
+      achievements.forEach(achievement => {
+        const achievementElement = document.createElement('div');
+        achievementElement.className = `achievement-item ${achievement.unlocked ? 'unlocked' : 'locked'}`;
+        
+        achievementElement.innerHTML = `
+          <div class="achievement-info">
+            <div><strong>${achievement.name}</strong></div>
+            <div>${achievement.description}</div>
+            <div>${achievement.unlocked ? 'Concluído ✓' : `Recompensa: ${achievement.reward} 🪙`}</div>
+          </div>
+        `;
+        
+        achievementsContainer.appendChild(achievementElement);
+      });
+    }
+    
+    // Buy upgrade
+    function buyUpgrade(upgradeId) {
+      const upgrade = upgrades.find(u => u.id === upgradeId);
+      
+      if (!upgrade) return;
+      
+      const price = getUpgradePrice(upgrade);
+      
+      if (coins >= price && upgrade.level < upgrade.maxLevel) {
+        coins -= price;
+        upgrade.level++;
+        
+        // Apply upgrades effects
+        if (upgradeId === 'click-power') {
+          clickPower = getUpgradeEffect('click-power');
+        }
+        
+        // Show notification
+        showNotification(`Upgrade de ${upgrade.name} comprado!`);
+        
+        // Update displays
+        updateDisplays();
+        renderUpgrades();
+        
+        // Check for achievement
+        if (upgrade.level >= upgrade.maxLevel) {
+          checkAchievements();
+        }
       }
     }
     
-    // Update mode display
-    function updateModeDisplay() {
-      if (isCoopMode) {
-        soloModeButton.classList.remove('active');
-        coopModeButton.classList.add('active');
-        clickAreas.style.display = 'flex';
-        playerStats.style.display = 'flex';
-        teamBonus.style.display = 'block';
-        player2Area.style.display = 'flex';
-        targetClicks = 20; // More clicks required for coop mode
-      } else {
-        soloModeButton.classList.add('active');
-        coopModeButton.classList.remove('active');
-        // In solo mode, we still show both areas but disable player 2
-        clickAreas.style.display = 'flex';
-        playerStats.style.display = 'flex';
-        teamBonus.style.display = 'none';
-        player2Area.style.display = 'none';
-        targetClicks = 10; // Fewer clicks required for solo mode
-      }
+    // Get upgrade price based on level
+    function getUpgradePrice(upgrade) {
+      return Math.ceil(upgrade.basePrice * Math.pow(upgrade.priceIncrease, upgrade.level));
+    }
+    
+    // Get upgrade effect based on level
+    function getUpgradeEffect(upgradeId) {
+      const upgrade = upgrades.find(u => u.id === upgradeId);
+      if (!upgrade) return 1; // Default multiplier if not found
       
-      updateDisplays();
-      renderUpgrades(); // Re-render with mode-specific upgrades
-      renderAchievements(); // Re-render with mode-specific achievements
+      return upgrade.effect(upgrade.level);
+    }
+    
+    // Run auto-clicker
+    function runAutoClicker() {
+      const autoClickPower = getUpgradeEffect('auto-clicker');
+      if (autoClickPower > 0) {
+        clicks += autoClickPower * clickPower;
+        updateProgressBar();
+        updateDisplays();
+        
+        // Check if target reached
+        if (clicks >= targetClicks) {
+          levelUp();
+        }
+      }
+    }
+    
+    // Check achievements
+    function checkAchievements() {
+      let newUnlocks = false;
+      
+      achievements.forEach(achievement => {
+        if (!achievement.unlocked && achievement.requirement()) {
+          achievement.unlocked = true;
+          coins += achievement.reward;
+          showNotification(`Objetivo alcançado: ${achievement.name}! +${achievement.reward} 🪙`);
+          newUnlocks = true;
+        }
+      });
+      
+      if (newUnlocks) {
+        renderAchievements();
+        renderUpgrades(); // Re-render in case new coins enable purchases
+        updateDisplays();
+      }
+    }
+    
+    // Show notification
+    function showNotification(message) {
+      notification.textContent = message;
+      notification.classList.add('show');
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+    
+    // Initialize the game
+    initGame();
+  </script>
+</body>
+</html>

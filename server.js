@@ -58,7 +58,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Serve the HTML file when the root URL is accessed
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'ClickerCoop.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 server.listen(3000, () => {

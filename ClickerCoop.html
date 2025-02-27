@@ -3,19 +3,46 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clicker Master - Modo Cooperativo</title>
+  <title>Jogo Clicker Cooperativo</title>
   <link rel="stylesheet" href="ClickerCoop.css">
 </head>
 <body>
   <div class="game-container">
-    <h1>Clicker Master</h1>
-
-    <div class="mode-selection">
-      <button class="mode-button" id="solo-mode-button">Modo Solo</button>
-      <button class="mode-button active" id="coop-mode-button">Modo Cooperativo</button>
+    <h1>Clicker Cooperativo</h1>
+    
+    <div class="player-setup">
+      <h2>Jogadores</h2>
+      <div class="player-list" id="player-list">
+        <!-- Lista de jogadores será adicionada aqui -->
+      </div>
+      <div class="player-controls">
+        <input type="text" class="player-input" id="player-name" placeholder="Seu nome">
+        <select id="player-role" class="player-input">
+          <option value="clicker">Clicker (Cliques +20%)</option>
+          <option value="upgrader">Upgrader (Upgrades -15%)</option>
+          <option value="supporter">Supporter (Bônus para equipe)</option>
+        </select>
+        <button class="buy-button" id="add-player">Adicionar Jogador</button>
+        <button class="buy-button" id="switch-player">Alternar Jogador</button>
+      </div>
+    </div>
+    
+    <div class="team-goal-section">
+      <h2>Objetivo da Equipe: Nível <span id="team-goal">5</span></h2>
+      <div>Progresso: <span id="team-progress">1</span>/<span id="team-goal-display">5</span></div>
+      <div class="progress-container">
+        <div class="progress-bar" id="team-progress-bar"></div>
+      </div>
+      <div class="bonus-message" id="team-bonus-message">
+        Trabalhem juntos para ganhar bônus para toda a equipe!
+      </div>
     </div>
     
     <div class="stats">
+      <div class="stat-box">
+        <h3>Jogador</h3>
+        <div id="active-player">-</div>
+      </div>
       <div class="stat-box">
         <h3>Nível</h3>
         <div id="level">1</div>
@@ -26,7 +53,7 @@
       </div>
       <div class="stat-box">
         <h3>Meta</h3>
-        <div id="target">20</div>
+        <div id="target">10</div>
       </div>
       <div class="stat-box">
         <h3>Moedas</h3>
@@ -41,85 +68,42 @@
     <div class="progress-container">
       <div class="progress-bar" id="progress-bar"></div>
     </div>
-
-    <div class="team-bonus" id="team-bonus">
-      Bônus de Equipe: +20% de poder de clique quando ambos jogadores estão ativos!
+    
+    <div class="click-area" id="click-area">
+      Clique aqui!
     </div>
     
-    <div class="player-stats">
-      <div class="player-stat player1">
-        <div class="player-stat-header">
-          <h3>Jogador 1</h3>
-          <div>Cliques: <span id="player1-clicks">0</span></div>
-        </div>
-        <div class="player-stat-content">
-          <div class="player-stat-item">
-            <div class="player-stat-label">Poder</div>
-            <div class="player-stat-value" id="player1-power">1</div>
-          </div>
-          <div class="player-stat-item">
-            <div class="player-stat-label">Contribuição</div>
-            <div class="player-stat-value" id="player1-contribution">0%</div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="player-stat player2">
-        <div class="player-stat-header">
-          <h3>Jogador 2</h3>
-          <div>Cliques: <span id="player2-clicks">0</span></div>
-        </div>
-        <div class="player-stat-content">
-          <div class="player-stat-item">
-            <div class="player-stat-label">Poder</div>
-            <div class="player-stat-value" id="player2-power">1</div>
-          </div>
-          <div class="player-stat-item">
-            <div class="player-stat-label">Contribuição</div>
-            <div class="player-stat-value" id="player2-contribution">0%</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="player-contribution">
-      <div class="player1-contribution" id="player1-contribution-bar" style="width: 50%"></div>
-      <div class="player2-contribution" id="player2-contribution-bar" style="width: 50%"></div>
-    </div>
-    
-    <div class="click-areas">
-      <div class="click-area player1" id="player1-area">
-        <div class="player-identifier">Jogador 1 (Q)</div>
-        Clique aqui ou pressione Q!
-      </div>
-      
-      <div class="click-area player2" id="player2-area">
-        <div class="player-identifier">Jogador 2 (P)</div>
-        Clique aqui ou pressione P!
+    <div class="section">
+      <h2>Contribuição dos Jogadores</h2>
+      <div id="contribution-container">
+        <!-- Será preenchido com as estatísticas de cada jogador -->
       </div>
     </div>
     
     <div class="game-sections">
       <div class="section">
-        <div class="tab-buttons">
-          <button class="tab-button active" data-tab="upgrades">Upgrades</button>
-          <button class="tab-button" data-tab="achievements">Objetivos</button>
+        <h2>Upgrades</h2>
+        <div id="upgrades-container">
+          <!-- Upgrades serão adicionados aqui dinamicamente -->
         </div>
-        
-        <div class="tab-content active" id="upgrades">
-          <div id="upgrades-container">
-            <!-- Upgrades will be added here dynamically -->
-          </div>
-        </div>
-        
-        <div class="tab-content" id="achievements">
-          <div id="achievements-container">
-            <!-- Achievements will be added here dynamically -->
-          </div>
+      </div>
+      
+      <div class="section">
+        <h2>Objetivos</h2>
+        <div id="achievements-container">
+          <!-- Objetivos serão adicionados aqui dinamicamente -->
         </div>
       </div>
     </div>
+    
+    <div class="section">
+      <h2>Log de Atividades</h2>
+      <div id="chat-container" class="chat-container">
+        <!-- Mensagens serão adicionadas aqui -->
+      </div>
+    </div>
   </div>
+  
   <div class="notification" id="notification"></div>
   <script src="ClickerCoop.js"></script>
 </body>

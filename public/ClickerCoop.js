@@ -13,8 +13,12 @@ let gameState = {
   teamGoal: 5,
 };
 
+// Define avatar colors
+const avatarColors = ['#007bff', '#28a745', '#dc3545', '#ffc107', '#17a2b8'];
+
 // Atualizar estado do jogo
 socket.on('gameState', (state) => {
+  console.log('Received game state:', state);
   gameState = state;
   updateDisplays();
   renderPlayers();
@@ -106,7 +110,7 @@ const upgrades = [
     basePrice: 40,
     level: 0,
     maxLevel: 5,
-    effect: level => level * (players.length * 0.1), // 10% por jogador por nível
+    effect: level => level * (gameState.players.length * 0.1), // 10% por jogador por nível
     priceIncrease: 1.7
   },
   {
@@ -176,7 +180,7 @@ const achievements = [
     name: 'Esforço de Equipe',
     description: 'Atinja o primeiro objetivo da equipe',
     unlocked: false,
-    requirement: () => teamLevel > 1,
+    requirement: () => gameState.teamLevel > 1,
     reward: 30
   },
   {
@@ -184,7 +188,7 @@ const achievements = [
     name: 'Trabalho em Equipe',
     description: 'Tenha 3 ou mais jogadores na equipe',
     unlocked: false,
-    requirement: () => players.length >= 3,
+    requirement: () => gameState.players.length >= 3,
     reward: 25
   }
 ];
@@ -246,6 +250,7 @@ function addPlayer() {
     initials: playerName.slice(0, 2).toUpperCase()
   };
   
+  console.log('Adding player:', player);
   socket.emit('addPlayer', player);
   playerNameInput.value = "";
 }

@@ -27,8 +27,10 @@ io.on('connection', (socket) => {
   
   // Handle player addition
   socket.on('addPlayer', (player) => {
+    console.log('Adding player:', player);
     gameState.players.push(player);
     io.emit('gameState', gameState);
+    console.log('Updated game state:', gameState);
   });
 
   // Handle player switch

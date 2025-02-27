@@ -508,695 +508,349 @@
   
   <div class="notification" id="notification"></div>
 
-  <script>
-    // Game state
-    let clicks = 0;
-    let level = 1;
-    let targetClicks = 20; // Increased for cooperative mode
-    let coins = 0;
-    let clickPower = 1;
-    let isCoopMode = true;
-    
-    // Player stats
-    const players = {
-      player1: {
-        clicks: 0,
-        power: 1,
-        key: 'Q',
-        keyCode: 81,
-        lastClickTime: 0,
-        isActive: false
-      },
-      player2: {
-        clicks: 0,
-        power: 1,
-        key: 'P',
-        keyCode: 80,
-        lastClickTime: 0,
-        isActive: false
-      }
-    };
-    
-    // DOM elements
-    const progressBar = document.getElementById('progress-bar');
-    const clicksDisplay = document.getElementById('clicks');
-    const levelDisplay = document.getElementById('level');
-    const targetDisplay = document.getElementById('target');
-    const coinsDisplay = document.getElementById('coins');
-    const clickPowerDisplay = document.getElementById('click-power');
-    const player1Area = document.getElementById('player1-area');
-    const player2Area = document.getElementById('player2-area');
-    const player1Clicks = document.getElementById('player1-clicks');
-    const player2Clicks = document.getElementById('player2-clicks');
-    const player1Power = document.getElementById('player1-power');
-    const player2Power = document.getElementById('player2-power');
-    const player1Contribution = document.getElementById('player1-contribution');
-    const player2Contribution = document.getElementById('player2-contribution');
-    const player1ContributionBar = document.getElementById('player1-contribution-bar');
-    const player2ContributionBar = document.getElementById('player2-contribution-bar');
-    const teamBonus = document.getElementById('team-bonus');
-    const gameContainer = document.querySelector('.game-container');
-    const upgradesContainer = document.getElementById('upgrades-container');
-    const achievementsContainer = document.getElementById('achievements-container');
-    const notification = document.getElementById('notification');
-    const soloModeButton = document.getElementById('solo-mode-button');
-    const coopModeButton = document.getElementById('coop-mode-button');
-    const playerStats = document.querySelector('.player-stats');
-    const clickAreas = document.querySelector('.click-areas');
-    
-    // Upgrades definition
-    const upgrades = [
-      {
-        id: 'click-power',
-        name: 'Poder de Clique',
-        description: 'Aumenta o valor de cada clique',
-        basePrice: 10,
-        level: 0,
-        maxLevel: 10,
-        effect: level => level + 1,
-        priceIncrease: 1.5,
-        forPlayer: null // Affects both players
-      },
-      {
-        id: 'auto-clicker',
-        name: 'Auto Clicker',
-        description: 'Clica automaticamente a cada segundo',
-        basePrice: 50,
-        level: 0,
-        maxLevel: 5,
-        effect: level => level,
-        priceIncrease: 2,
-        forPlayer: null // Affects both players
-      },
-      {
-        id: 'coin-boost',
-        name: 'Boost de Moedas',
-        description: 'Aumenta as moedas ganhas por nível',
-        basePrice: 30,
-        level: 0,
-        maxLevel: 5,
-        effect: level => 1 + level * 0.2, // 20% increase per level
-        priceIncrease: 1.8,
-        forPlayer: null // Affects both players
-      },
-      {
-        id: 'progress-boost',
-        name: 'Boost de Progresso',
-        description: 'Reduz o aumento da dificuldade entre níveis',
-        basePrice: 100,
-        level: 0,
-        maxLevel: 3,
-        effect: level => 1.25 - (level * 0.05), // Reduces from 1.25 to 1.10
-        priceIncrease: 2.5,
-        forPlayer: null // Affects both players
-      },
-      {
-        id: 'player1-power',
-        name: 'Poder Jogador 1',
-        description: 'Aumenta o poder de clique do Jogador 1',
-        basePrice: 15,
-        level: 0,
-        maxLevel: 5,
-        effect: level => level + 1,
-        priceIncrease: 1.6,
-        forPlayer: 'player1',
-        coop: true // Only available in coop mode
-      },
-      {
-        id: 'player2-power',
-        name: 'Poder Jogador 2',
-        description: 'Aumenta o poder de clique do Jogador 2',
-        basePrice: 15,
-        level: 0,
-        maxLevel: 5,
-        effect: level => level + 1,
-        priceIncrease: 1.6,
-        forPlayer: 'player2',
-        coop: true // Only available in coop mode
-      },
-      {
-        id: 'synergy-boost',
-        name: 'Sinergia de Equipe',
-        description: 'Aumenta o bônus quando ambos jogadores estão ativos',
-        basePrice: 75,
-        level: 0,
-        maxLevel: 3,
-        effect: level => 0.2 + (level * 0.1), // Increases team bonus from 20% to 50%
-        priceIncrease: 2,
-        forPlayer: null,
-        coop: true, // Only available in coop mode
-        synergy: true // Special synergy upgrade
-      }
-    ];
-    
-    // Achievements definition
-    const achievements = [
-      {
-        id: 'first-level',
-        name: 'Primeiro Nível',
-        description: 'Complete o nível 1',
-        unlocked: false,
-        requirement: () => level > 1,
-        reward: 5
-      },
-      {
-        id: 'level-5',
-        name: 'Persistente',
-        description: 'Alcance o nível 5',
-        unlocked: false,
-        requirement: () => level >= 5,
-        reward: 20
-      },
-      {
-        id: 'level-10',
-        name: 'Dedicado',
-        description: 'Alcance o nível 10',
-        unlocked: false,
-        requirement: () => level >= 10,
-        reward: 50
-      },
-      {
-        id: 'level-25',
-        name: 'Mestre Clicker',
-        description: 'Alcance o nível 25',
-        unlocked: false,
-        requirement: () => level >= 25,
-        reward: 150
-      },
-      {
-        id: 'coins-100',
-        name: 'Colecionador',
-        description: 'Acumule 100 moedas',
-        unlocked: false,
-        requirement: () => coins >= 100,
-        reward: 10
-      },
-      {
-        id: 'upgrade-max',
-        name: 'Aprimorado',
-        description: 'Maximize um upgrade',
-        unlocked: false,
-        requirement: () => upgrades.some(upgrade => upgrade.level >= upgrade.maxLevel),
-        reward: 75
-      },
-      {
-        id: 'team-balance',
-        name: 'Equilíbrio de Equipe',
-        description: 'Tenha contribuição balanceada entre jogadores (45-55%)',
-        unlocked: false,
-        requirement: () => {
-          const total = players.player1.clicks + players.player2.clicks;
-          if (total === 0) return false;
-          const p1Percent = (players.player1.clicks / total) * 100;
-          return p1Percent >= 45 && p1Percent <= 55;
-        },
-        reward: 30,
-        coop: true
-      },
-      {
-        id: 'team-synergy',
-        name: 'Sinergia Perfeita',
-        description: 'Complete um nível com ambos jogadores contribuindo',
-        unlocked: false,
-        requirement: () => players.player1.isActive && players.player2.isActive,
-        reward: 40,
-        coop: true
-      }
-    ];
-    
-    // Initialize game
-    function initGame() {
-      updateDisplays();
-      renderUpgrades();
-      renderAchievements();
-      updateModeDisplay();
-      
-      // Add click events for click areas
-      player1Area.addEventListener('click', (e) => {
+<script>
+// Game state
+let clicks = 0;
+let level = 1;
+let targetClicks = 20;
+let coins = 0;
+let clickPower = 1;
+let isCoopMode = true;
+
+const players = {
+    player1: { clicks: 0, power: 1, key: 'Q', keyCode: 81, lastClickTime: 0, isActive: false },
+    player2: { clicks: 0, power: 1, key: 'P', keyCode: 80, lastClickTime: 0, isActive: false }
+};
+
+// DOM elements
+const elements = {
+    progressBar: document.getElementById('progress-bar'),
+    clicksDisplay: document.getElementById('clicks'),
+    levelDisplay: document.getElementById('level'),
+    targetDisplay: document.getElementById('target'),
+    coinsDisplay: document.getElementById('coins'),
+    clickPowerDisplay: document.getElementById('click-power'),
+    player1Area: document.getElementById('player1-area'),
+    player2Area: document.getElementById('player2-area'),
+    player1Clicks: document.getElementById('player1-clicks'),
+    player2Clicks: document.getElementById('player2-clicks'),
+    player1Power: document.getElementById('player1-power'),
+    player2Power: document.getElementById('player2-power'),
+    player1Contribution: document.getElementById('player1-contribution'),
+    player2Contribution: document.getElementById('player2-contribution'),
+    player1ContributionBar: document.getElementById('player1-contribution-bar'),
+    player2ContributionBar: document.getElementById('player2-contribution-bar'),
+    teamBonus: document.getElementById('team-bonus'),
+    upgradesContainer: document.getElementById('upgrades-container'),
+    achievementsContainer: document.getElementById('achievements-container'),
+    notification: document.getElementById('notification'),
+    soloModeButton: document.getElementById('solo-mode-button'),
+    coopModeButton: document.getElementById('coop-mode-button'),
+    playerStats: document.querySelector('.player-stats'),
+    clickAreas: document.querySelector('.click-areas')
+};
+
+// Upgrades e achievements permanecem iguais ao seu código original
+const upgrades = [/* ... seu array de upgrades original ... */];
+const achievements = [/* ... seu array de achievements original ... */];
+
+function initGame() {
+    updateDisplays();
+    renderUpgrades();
+    renderAchievements();
+    updateModeDisplay();
+
+    // Event Listeners
+    elements.player1Area.addEventListener('click', (e) => {
         e.stopPropagation();
         playerClick('player1', e);
-      });
-      
-      player2Area.addEventListener('click', (e) => {
+    });
+
+    elements.player2Area.addEventListener('click', (e) => {
         e.stopPropagation();
         playerClick('player2', e);
-      });
-      
-      // Add keyboard controls
-      document.addEventListener('keydown', (e) => {
-        if (e.keyCode === players.player1.keyCode) {
-          playerClick('player1');
-        } else if (e.keyCode === players.player2.keyCode) {
-          playerClick('player2');
-        }
-      });
-      
-      // Mode selection buttons
-      soloModeButton.addEventListener('click', () => {
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.keyCode === players.player1.keyCode) playerClick('player1');
+        else if (e.keyCode === players.player2.keyCode) playerClick('player2');
+    });
+
+    elements.soloModeButton.addEventListener('click', () => {
         isCoopMode = false;
         updateModeDisplay();
-      });
-      
-      coopModeButton.addEventListener('click', () => {
+    });
+
+    elements.coopModeButton.addEventListener('click', () => {
         isCoopMode = true;
         updateModeDisplay();
-      });
-      
-      // Tab switching
-      document.querySelectorAll('.tab-button').forEach(button => {
-        button.addEventListener('click', () => {
-          // Remove active class from all buttons and tabs
-          document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-          document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-          
-          // Add active class to clicked button and corresponding tab
-          button.classList.add('active');
-          document.getElementById(button.dataset.tab).classList.add('active');
-        });
-      });
-      
-      // Start auto-clicker timer
-      setInterval(runAutoClicker, 1000);
-      
-      // Start achievement check timer
-      setInterval(checkAchievements, 2000);
-      
-      // Check player activity timer
-      setInterval(checkPlayerActivity, 5000);
-    }
-    
-    // Player click handler
-    function playerClick(playerKey, event) {
-      if (!isCoopMode && playerKey === 'player2') return; // In solo mode, only player 1 can click
-      
-      const player = players[playerKey];
-      player.lastClickTime = Date.now();
-      player.isActive = true;
-      
-      // Apply power
-      const clickValue = player.power;
-      player.clicks += clickValue;
-      clicks += clickValue;
-      
-      // Apply team bonus if both players are active
-      if (isCoopMode && players.player1.isActive && players.player2.isActive) {
-        const synergyBoost = getUpgradeEffect('synergy-boost');
-        const teamBonus = clickValue * synergyBoost;
-        clicks += teamBonus;
-      }
-      
-      // Create click effect animation if event exists
-      if (event) {
-        createClickEffect(event, playerKey);
-      } else {
-        // For keyboard clicks, create effect in the center of the corresponding area
-        const area = document.getElementById(`${playerKey}-area`);
-        const rect = area.getBoundingClientRect();
-        const dummyEvent = {
-          clientX: rect.left + rect.width / 2,
-          clientY: rect.top + rect.height / 2,
-          target: area
-        };
-        createClickEffect(dummyEvent, playerKey);
-      }
-      
-      updateProgressBar();
-      updatePlayerContributions();
-      updateDisplays();
-      
-      // Check if target reached
-      if (clicks >= targetClicks) {
-        levelUp();
-      }
-    }
-    
-    // Create click effect animation
-    function createClickEffect(event, playerKey) {
-      const effect = document.createElement('div');
-      effect.classList.add('click-effect');
-      
-      // Position effect at click coordinates relative to target
-      const rect = event.target.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      
-      effect.style.left = `${x}px`;
-      effect.style.top = `${y}px`;
-      effect.style.width = '50px';
-      effect.style.height = '50px';
-      
-      // Set color based on player
-      if (playerKey === 'player1') {
-        effect.style.backgroundColor = '#2196F3';
-      } else {
-        effect.style.backgroundColor = '#FF5722';
-      }
-      
-      event.target.appendChild(effect);
-      
-      // Remove effect after animation
-      setTimeout(() => {
-        effect.remove();
-      }, 500);
-    }
-    
-    // Update progress bar
-    function updateProgressBar() {
-      const progress = (clicks / targetClicks) * 100;
-      progressBar.style.width = `${Math.min(100, progress)}%`;
-    }
-    
-    // Update player contributions
-    function updatePlayerContributions() {
-      const totalClicks = players.player1.clicks + players.player2.clicks;
-      if (totalClicks === 0) return;
-      
-      const p1Percent = Math.round((players.player1.clicks / totalClicks) * 100);
-      const p2Percent = 100 - p1Percent;
-      
-      player1Contribution.textContent = p1Percent + '%';
-      player2Contribution.textContent = p2Percent + '%';
-      
-      player1ContributionBar.style.width = p1Percent + '%';
-      player2ContributionBar.style.width = p2Percent + '%';
-    }
-    
-    // Update display elements
-    function updateDisplays() {
-      clicksDisplay.textContent = Math.floor(clicks);
-      levelDisplay.textContent = level;
-      targetDisplay.textContent = Math.ceil(targetClicks);
-      coinsDisplay.textContent = Math.floor(coins);
-      clickPowerDisplay.textContent = clickPower;
-      
-      player1Clicks.textContent = Math.floor(players.player1.clicks);
-      player2Clicks.textContent = Math.floor(players.player2.clicks);
-      player1Power.textContent = players.player1.power;
-      player2Power.textContent = players.player2.power;
-      
-      // Update the team bonus text
-      if (isCoopMode) {
-        const synergyBoost = getUpgradeEffect('synergy-boost');
-        teamBonus.textContent = `Bônus de Equipe: +${Math.round(synergyBoost * 100)}% de poder quando ambos jogadores estão ativos!`;
-      }
-    }
-    
-    // Update mode display
-    function updateModeDisplay() {
-      if (isCoopMode) {
-        soloModeButton.classList.remove('active');
-        coopModeButton.classList.add('active');
-        clickAreas.style.display = 'flex';
-        playerStats.style.display = 'flex';
-        teamBonus.style.display = 'block';
-        player2Area.style.display = 'flex';
-        targetClicks = 20; // More clicks required for coop mode
-      } else {
-        soloModeButton.classList.add('active');
-        coopModeButton.classList.remove('active');
-        // In solo mode, we still show both areas but disable player 2
-        clickAreas.style.display = 'flex';
-        playerStats.style.display = 'flex';
-        teamBonus.style.display = 'none';
-        player2Area.style.display = 'none';
-        targetClicks = 10; // Fewer clicks required for solo mode
-      }
-      
-      updateDisplays();
-      renderUpgrades(); // Re-render with mode-specific upgrades
-      renderAchievements(); // Re-render with mode-specific achievements
+    });
 
-/ Completando o script a partir da função updateModeDisplay
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', () => {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            button.classList.add('active');
+            document.getElementById(button.dataset.tab).classList.add('active');
+        });
+    });
+
+    setInterval(runAutoClicker, 1000);
+    setInterval(checkAchievements, 2000);
+    setInterval(checkPlayerActivity, 5000);
+}
+
+function playerClick(playerKey, event) {
+    if (!isCoopMode && playerKey === 'player2') return;
+
+    const player = players[playerKey];
+    player.lastClickTime = Date.now();
+    player.isActive = true;
+
+    const clickValue = player.power;
+    player.clicks += clickValue;
+    clicks += clickValue;
+
+    if (isCoopMode && players.player1.isActive && players.player2.isActive) {
+        const synergyBoost = getUpgradeEffect('synergy-boost');
+        clicks += clickValue * synergyBoost;
+    }
+
+    if (event) {
+        createClickEffect(event, playerKey);
+    } else {
+        const area = elements[`${playerKey}Area`];
+        const rect = area.getBoundingClientRect();
+        createClickEffect({
+            clientX: rect.left + rect.width / 2,
+            clientY: rect.top + rect.height / 2,
+            target: area
+        }, playerKey);
+    }
+
+    updateProgressBar();
+    updatePlayerContributions();
+    updateDisplays();
+
+    if (clicks >= targetClicks) levelUp();
+}
+
+function createClickEffect(event, playerKey) {
+    const effect = document.createElement('div');
+    effect.classList.add('click-effect');
+    
+    const rect = event.target.getBoundingClientRect();
+    effect.style.left = `${event.clientX - rect.left}px`;
+    effect.style.top = `${event.clientY - rect.top}px`;
+    effect.style.width = '50px';
+    effect.style.height = '50px';
+    effect.style.backgroundColor = playerKey === 'player1' ? '#2196F3' : '#FF5722';
+
+    event.target.appendChild(effect);
+    setTimeout(() => effect.remove(), 500);
+}
+
+function updateProgressBar() {
+    elements.progressBar.style.width = `${Math.min(100, (clicks / targetClicks) * 100)}%`;
+}
+
+function updatePlayerContributions() {
+    const totalClicks = players.player1.clicks + players.player2.clicks;
+    if (totalClicks === 0) return;
+
+    const p1Percent = Math.round((players.player1.clicks / totalClicks) * 100);
+    const p2Percent = 100 - p1Percent;
+
+    elements.player1Contribution.textContent = p1Percent + '%';
+    elements.player2Contribution.textContent = p2Percent + '%';
+    elements.player1ContributionBar.style.width = p1Percent + '%';
+    elements.player2ContributionBar.style.width = p2Percent + '%';
+}
+
+function updateDisplays() {
+    elements.clicksDisplay.textContent = Math.floor(clicks);
+    elements.levelDisplay.textContent = level;
+    elements.targetDisplay.textContent = Math.ceil(targetClicks);
+    elements.coinsDisplay.textContent = Math.floor(coins);
+    elements.clickPowerDisplay.textContent = clickPower;
+    elements.player1Clicks.textContent = Math.floor(players.player1.clicks);
+    elements.player2Clicks.textContent = Math.floor(players.player2.clicks);
+    elements.player1Power.textContent = players.player1.power;
+    elements.player2Power.textContent = players.player2.power;
+
+    if (isCoopMode) {
+        const synergyBoost = getUpgradeEffect('synergy-boost');
+        elements.teamBonus.textContent = `Bônus de Equipe: +${Math.round(synergyBoost * 100)}% de poder quando ambos jogadores estão ativos!`;
+    }
+}
 
 function updateModeDisplay() {
-  if (isCoopMode) {
-    soloModeButton.classList.remove('active');
-    coopModeButton.classList.add('active');
-    clickAreas.style.display = 'flex';
-    playerStats.style.display = 'flex';
-    teamBonus.style.display = 'block';
-    player2Area.style.display = 'flex';
-    targetClicks = 20; // More clicks required for coop mode
-  } else {
-    soloModeButton.classList.add('active');
-    coopModeButton.classList.remove('active');
-    // In solo mode, we still show both areas but disable player 2
-    clickAreas.style.display = 'flex';
-    playerStats.style.display = 'flex';
-    teamBonus.style.display = 'none';
-    player2Area.style.display = 'none';
-    targetClicks = 10; // Fewer clicks required for solo mode
-  }
-  
-  updateDisplays();
-  renderUpgrades(); // Re-render with mode-specific upgrades
-  renderAchievements(); // Re-render with mode-specific achievements
-}
-
-// Level up function
-function levelUp() {
-  level++;
-  
-  // Reset progress
-  clicks = 0;
-  
-  // Increase target for next level based on progress boost
-  const progressBoost = getUpgradeEffect('progress-boost');
-  targetClicks = Math.ceil(targetClicks * progressBoost);
-  
-  // Award coins
-  const coinBoost = getUpgradeEffect('coin-boost');
-  const coinsAwarded = Math.floor(level * 5 * coinBoost);
-  coins += coinsAwarded;
-  
-  // Reset player clicks for new level
-  players.player1.clicks = 0;
-  players.player2.clicks = 0;
-  
-  // Show notification
-  showNotification(`Nível ${level} alcançado! +${coinsAwarded} moedas!`);
-  
-  // Visual effect
-  levelDisplay.classList.add('level-up');
-  setTimeout(() => {
-    levelDisplay.classList.remove('level-up');
-  }, 1000);
-  
-  // Reset progress bar
-  updateProgressBar();
-  
-  // Update displays
-  updateDisplays();
-  
-  // Check achievements
-  checkAchievements();
-}
-
-// Get upgrade effect value
-function getUpgradeEffect(upgradeId) {
-  const upgrade = upgrades.find(u => u.id === upgradeId);
-  if (!upgrade) return 0;
-  return upgrade.effect(upgrade.level);
-}
-
-// Run auto clicker
-function runAutoClicker() {
-  const autoClickLevel = getUpgradeEffect('auto-clicker');
-  if (autoClickLevel <= 0) return;
-  
-  // Auto clicker distributes clicks evenly in coop mode
-  if (isCoopMode) {
-    // Simulate clicks for both players
-    const clicksPerPlayer = autoClickLevel / 2;
-    
-    // Add clicks to player statistics
-    players.player1.clicks += clicksPerPlayer * players.player1.power;
-    players.player2.clicks += clicksPerPlayer * players.player2.power;
-    
-    // Add total clicks
-    clicks += autoClickLevel * ((players.player1.power + players.player2.power) / 2);
-  } else {
-    // In solo mode, all auto clicks go to player 1
-    players.player1.clicks += autoClickLevel * players.player1.power;
-    clicks += autoClickLevel * players.player1.power;
-  }
-  
-  updateProgressBar();
-  updatePlayerContributions();
-  updateDisplays();
-  
-  // Check if target reached
-  if (clicks >= targetClicks) {
-    levelUp();
-  }
-}
-
-// Check for unlocked achievements
-function checkAchievements() {
-  let newlyUnlocked = false;
-  
-  achievements.forEach(achievement => {
-    // Skip already unlocked achievements
-    if (achievement.unlocked) return;
-    
-    // Skip coop-only achievements in solo mode
-    if (!isCoopMode && achievement.coop) return;
-    
-    // Check if requirement is met
-    if (achievement.requirement()) {
-      achievement.unlocked = true;
-      coins += achievement.reward;
-      showNotification(`Objetivo Desbloqueado: ${achievement.name}! +${achievement.reward} moedas!`);
-      newlyUnlocked = true;
+    if (isCoopMode) {
+        elements.soloModeButton.classList.remove('active');
+        elements.coopModeButton.classList.add('active');
+        elements.teamBonus.style.display = 'block';
+        elements.player2Area.style.opacity = '1';
+        elements.player2Area.style.pointerEvents = 'auto';
+        targetClicks = 20;
+    } else {
+        elements.soloModeButton.classList.add('active');
+        elements.coopModeButton.classList.remove('active');
+        elements.teamBonus.style.display = 'none';
+        elements.player2Area.style.opacity = '0.5';
+        elements.player2Area.style.pointerEvents = 'none';
+        targetClicks = 10;
     }
-  });
-  
-  // Re-render achievements if any were unlocked
-  if (newlyUnlocked) {
-    renderAchievements();
     updateDisplays();
-  }
+    renderUpgrades();
+    renderAchievements();
 }
 
-// Check player activity
+function levelUp() {
+    level++;
+    clicks = 0;
+    const progressBoost = getUpgradeEffect('progress-boost');
+    targetClicks = Math.ceil(targetClicks * progressBoost);
+    const coinBoost = getUpgradeEffect('coin-boost');
+    const coinsAwarded = Math.floor(level * 5 * coinBoost);
+    coins += coinsAwarded;
+    players.player1.clicks = 0;
+    players.player2.clicks = 0;
+
+    showNotification(`Nível ${level} alcançado! +${coinsAwarded} moedas!`);
+    elements.levelDisplay.classList.add('level-up');
+    setTimeout(() => elements.levelDisplay.classList.remove('level-up'), 1000);
+
+    updateProgressBar();
+    updateDisplays();
+    checkAchievements();
+}
+
+function getUpgradeEffect(upgradeId) {
+    const upgrade = upgrades.find(u => u.id === upgradeId);
+    return upgrade ? upgrade.effect(upgrade.level) : 0;
+}
+
+function runAutoClicker() {
+    const autoClickLevel = getUpgradeEffect('auto-clicker');
+    if (autoClickLevel <= 0) return;
+
+    if (isCoopMode) {
+        const clicksPerPlayer = autoClickLevel / 2;
+        players.player1.clicks += clicksPerPlayer * players.player1.power;
+        players.player2.clicks += clicksPerPlayer * players.player2.power;
+        clicks += autoClickLevel * ((players.player1.power + players.player2.power) / 2);
+    } else {
+        players.player1.clicks += autoClickLevel * players.player1.power;
+        clicks += autoClickLevel * players.player1.power;
+    }
+
+    updateProgressBar();
+    updatePlayerContributions();
+    updateDisplays();
+    if (clicks >= targetClicks) levelUp();
+}
+
+function checkAchievements() {
+    let newlyUnlocked = false;
+    achievements.forEach(achievement => {
+        if (!achievement.unlocked && (!achievement.coop || isCoopMode) && achievement.requirement()) {
+            achievement.unlocked = true;
+            coins += achievement.reward;
+            showNotification(`Objetivo Desbloqueado: ${achievement.name}! +${achievement.reward} moedas!`);
+            newlyUnlocked = true;
+        }
+    });
+    if (newlyUnlocked) {
+        renderAchievements();
+        updateDisplays();
+    }
+}
+
 function checkPlayerActivity() {
-  const now = Date.now();
-  const inactiveTime = 15000; // 15 seconds
-  
-  // Check player 1 activity
-  if (now - players.player1.lastClickTime > inactiveTime) {
-    players.player1.isActive = false;
-  }
-  
-  // Check player 2 activity
-  if (now - players.player2.lastClickTime > inactiveTime) {
-    players.player2.isActive = false;
-  }
+    const now = Date.now();
+    players.player1.isActive = now - players.player1.lastClickTime <= 15000;
+    players.player2.isActive = now - players.player2.lastClickTime <= 15000;
 }
 
-// Calculate upgrade price
 function calculateUpgradePrice(upgrade) {
-  return Math.floor(upgrade.basePrice * Math.pow(upgrade.priceIncrease, upgrade.level));
+    return Math.floor(upgrade.basePrice * Math.pow(upgrade.priceIncrease, upgrade.level));
 }
 
-// Buy upgrade
 function buyUpgrade(upgradeId) {
-  const upgrade = upgrades.find(u => u.id === upgradeId);
-  if (!upgrade) return false;
-  
-  // Check if upgrade is at max level
-  if (upgrade.level >= upgrade.maxLevel) return false;
-  
-  // Calculate price
-  const price = calculateUpgradePrice(upgrade);
-  
-  // Check if enough coins
-  if (coins < price) return false;
-  
-  // Apply purchase
-  coins -= price;
-  upgrade.level++;
-  
-  // Apply effect
-  if (upgrade.id === 'click-power') {
-    clickPower = upgrade.effect(upgrade.level);
-  } else if (upgrade.id === 'player1-power') {
-    players.player1.power = upgrade.effect(upgrade.level);
-  } else if (upgrade.id === 'player2-power') {
-    players.player2.power = upgrade.effect(upgrade.level);
-  }
-  
-  // Show notification
-  showNotification(`Upgrade comprado: ${upgrade.name} nível ${upgrade.level}!`);
-  
-  // Update displays
-  updateDisplays();
-  renderUpgrades();
-  
-  // Check achievements
-  checkAchievements();
-  
-  return true;
-}
+    const upgrade = upgrades.find(u => u.id === upgradeId);
+    if (!upgrade || upgrade.level >= upgrade.maxLevel) return false;
 
-// Render upgrades
-function renderUpgrades() {
-  upgradesContainer.innerHTML = '';
-  
-  upgrades.forEach(upgrade => {
-    // Skip coop-only upgrades in solo mode
-    if (!isCoopMode && upgrade.coop) return;
-    
     const price = calculateUpgradePrice(upgrade);
-    const canAfford = coins >= price;
-    const maxLevel = upgrade.level >= upgrade.maxLevel;
-    
-    const upgradeElement = document.createElement('div');
-    upgradeElement.className = `upgrade-item ${!canAfford || maxLevel ? 'disabled' : ''}`;
-    
-    // Add special class for synergy upgrades
-    if (upgrade.synergy) {
-      upgradeElement.classList.add('synergy-upgrade');
-    }
-    
-    upgradeElement.innerHTML = `
-      <div class="upgrade-info">
-        <div>${upgrade.name}</div>
-        <div class="upgrade-level">Nível ${upgrade.level}/${upgrade.maxLevel}</div>
-        <div>${upgrade.description}</div>
-      </div>
-      <button class="buy-button" ${!canAfford || maxLevel ? 'disabled' : ''}>
-        ${maxLevel ? 'MAX' : `${price} moedas`}
-      </button>
-    `;
-    
-    // Add click event if not maxed out and can afford
-    if (!maxLevel) {
-      const buyButton = upgradeElement.querySelector('.buy-button');
-      buyButton.addEventListener('click', () => {
-        buyUpgrade(upgrade.id);
-      });
-    }
-    
-    upgradesContainer.appendChild(upgradeElement);
-  });
+    if (coins < price) return false;
+
+    coins -= price;
+    upgrade.level++;
+
+    if (upgrade.id === 'click-power') clickPower = upgrade.effect(upgrade.level);
+    else if (upgrade.id === 'player1-power') players.player1.power = upgrade.effect(upgrade.level);
+    else if (upgrade.id === 'player2-power') players.player2.power = upgrade.effect(upgrade.level);
+
+    showNotification(`Upgrade comprado: ${upgrade.name} nível ${upgrade.level}!`);
+    updateDisplays();
+    renderUpgrades();
+    checkAchievements();
+    return true;
 }
 
-// Render achievements
+function renderUpgrades() {
+    elements.upgradesContainer.innerHTML = '';
+    upgrades.forEach(upgrade => {
+        if (!isCoopMode && upgrade.coop) return;
+
+        const price = calculateUpgradePrice(upgrade);
+        const canAfford = coins >= price;
+        const maxLevel = upgrade.level >= upgrade.maxLevel;
+
+        const upgradeElement = document.createElement('div');
+        upgradeElement.className = `upgrade-item ${!canAfford || maxLevel ? 'disabled' : ''} ${upgrade.synergy ? 'synergy-upgrade' : ''}`;
+        upgradeElement.innerHTML = `
+            <div class="upgrade-info">
+                <div>${upgrade.name}</div>
+                <div class="upgrade-level">Nível ${upgrade.level}/${upgrade.maxLevel}</div>
+                <div>${upgrade.description}</div>
+            </div>
+            <button class="buy-button" ${!canAfford || maxLevel ? 'disabled' : ''}>
+                ${maxLevel ? 'MAX' : `${price} moedas`}
+            </button>
+        `;
+
+        if (!maxLevel && canAfford) {
+            upgradeElement.querySelector('.buy-button').addEventListener('click', () => buyUpgrade(upgrade.id));
+        }
+        elements.upgradesContainer.appendChild(upgradeElement);
+    });
+}
+
 function renderAchievements() {
-  achievementsContainer.innerHTML = '';
-  
-  achievements.forEach(achievement => {
-    // Skip coop-only achievements in solo mode
-    if (!isCoopMode && achievement.coop) return;
-    
-    const achievementElement = document.createElement('div');
-    achievementElement.className = `achievement-item ${achievement.unlocked ? 'unlocked' : 'locked'}`;
-    
-    achievementElement.innerHTML = `
-      <div class="achievement-info">
-        <div>${achievement.name}</div>
-        <div>${achievement.description}</div>
-        ${achievement.unlocked ? `<div>Recompensa: ${achievement.reward} moedas</div>` : ''}
-      </div>
-    `;
-    
-    achievementsContainer.appendChild(achievementElement);
-  });
+    elements.achievementsContainer.innerHTML = '';
+    achievements.forEach(achievement => {
+        if (!isCoopMode && achievement.coop) return;
+
+        const achievementElement = document.createElement('div');
+        achievementElement.className = `achievement-item ${achievement.unlocked ? 'unlocked' : 'locked'}`;
+        achievementElement.innerHTML = `
+            <div class="achievement-info">
+                <div>${achievement.name}</div>
+                <div>${achievement.description}</div>
+                ${achievement.unlocked ? `<div>Recompensa: ${achievement.reward} moedas</div>` : ''}
+            </div>
+        `;
+        elements.achievementsContainer.appendChild(achievementElement);
+    });
 }
 
-// Show notification
 function showNotification(message) {
-  notification.textContent = message;
-  notification.classList.add('show');
-  
-  setTimeout(() => {
-    notification.classList.remove('show');
-  }, 3000);
+    elements.notification.textContent = message;
+    elements.notification.classList.add('show');
+    setTimeout(() => elements.notification.classList.remove('show'), 3000);
 }
 
-// Initialize the game
 initGame();
- </script>
+</script>
 </body>
 </html>

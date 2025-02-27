@@ -1,6 +1,7 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
+const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
@@ -52,7 +53,13 @@ io.on('connection', (socket) => {
   });
 });
 
-app.use(express.static('public'));
+// Serve static files from the "public" directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Serve the HTML file when the root URL is accessed
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'ClickerCoop.html'));
+});
 
 server.listen(3000, () => {
   console.log('Server is running on port 3000');

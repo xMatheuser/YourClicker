@@ -63,4 +63,6 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-module.exports = server;
+server.listen(3000, () => {
+  console.log('Server is running on port 3000');
+});

@@ -24,30 +24,38 @@ socket.on('gameState', (state) => {
 });
 
 // Elementos DOM
-const progressBar = document.getElementById('progress-bar');
-const clicksDisplay = document.getElementById('clicks');
-const levelDisplay = document.getElementById('level');
-const targetDisplay = document.getElementById('target');
-const coinsDisplay = document.getElementById('coins');
-const clickPowerDisplay = document.getElementById('click-power');
-const clickArea = document.getElementById('click-area');
-const gameContainer = document.querySelector('.game-container');
-const upgradesContainer = document.getElementById('upgrades-container');
-const achievementsContainer = document.getElementById('achievements-container');
-const notification = document.getElementById('notification');
-const playerList = document.getElementById('player-list');
-const playerNameInput = document.getElementById('player-name');
-const playerRoleSelect = document.getElementById('player-role');
-const addPlayerButton = document.getElementById('add-player');
-const switchPlayerButton = document.getElementById('switch-player');
-const activePlayerDisplay = document.getElementById('active-player');
-const contributionContainer = document.getElementById('contribution-container');
-const teamProgressBar = document.getElementById('team-progress-bar');
-const teamProgressDisplay = document.getElementById('team-progress');
-const teamGoalDisplay = document.getElementById('team-goal');
-const teamGoalDisplayExtra = document.getElementById('team-goal-display');
-const teamBonusMessage = document.getElementById('team-bonus-message');
-const chatContainer = document.getElementById('chat-container');
+let progressBar, clicksDisplay, levelDisplay, targetDisplay, coinsDisplay, clickPowerDisplay, clickArea, gameContainer, upgradesContainer, achievementsContainer, notification, playerList, playerNameInput, playerRoleSelect, addPlayerButton, switchPlayerButton, activePlayerDisplay, contributionContainer, teamProgressBar, teamProgressDisplay, teamGoalDisplay, teamGoalDisplayExtra, teamBonusMessage, chatContainer;
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Inicializar elementos DOM
+  progressBar = document.getElementById('progress-bar');
+  clicksDisplay = document.getElementById('clicks');
+  levelDisplay = document.getElementById('level');
+  targetDisplay = document.getElementById('target');
+  coinsDisplay = document.getElementById('coins');
+  clickPowerDisplay = document.getElementById('click-power');
+  clickArea = document.getElementById('click-area');
+  gameContainer = document.querySelector('.game-container');
+  upgradesContainer = document.getElementById('upgrades-container');
+  achievementsContainer = document.getElementById('achievements-container');
+  notification = document.getElementById('notification');
+  playerList = document.getElementById('player-list');
+  playerNameInput = document.getElementById('player-name');
+  playerRoleSelect = document.getElementById('player-role');
+  addPlayerButton = document.getElementById('add-player');
+  switchPlayerButton = document.getElementById('switch-player');
+  activePlayerDisplay = document.getElementById('active-player');
+  contributionContainer = document.getElementById('contribution-container');
+  teamProgressBar = document.getElementById('team-progress-bar');
+  teamProgressDisplay = document.getElementById('team-progress');
+  teamGoalDisplay = document.getElementById('team-goal');
+  teamGoalDisplayExtra = document.getElementById('team-goal-display');
+  teamBonusMessage = document.getElementById('team-bonus-message');
+  chatContainer = document.getElementById('chat-container');
+
+  // Inicializar o jogo
+  initGame();
+});
 
 // Definição de upgrades
 const upgrades = [
@@ -660,6 +668,3 @@ function showNotification(message) {
     notification.classList.remove('show');
   }, 3000);
 }
-
-// Inicializar o jogo
-initGame();

@@ -1,0 +1,384 @@
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    user-select: none;
+  }
+
+  .game-container {
+    width: 90%;
+    max-width: 1000px;
+    margin: 20px auto;
+    text-align: center;
+  }
+
+  .progress-container {
+    width: 100%;
+    height: 30px;
+    background-color: #e0e0e0;
+    border-radius: 15px;
+    margin: 20px 0;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background-color: #4CAF50;
+    width: 0%;
+    transition: width 0.2s;
+    border-radius: 15px;
+  }
+
+  .stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .stat-box {
+    background-color: #fff;
+    padding: 10px 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    min-width: 100px;
+    margin: 5px;
+  }
+
+  .click-areas {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .click-area {
+    flex: 1;
+    height: 200px;
+    background-color: #fff;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.1s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .click-area:active {
+    transform: scale(0.98);
+    background-color: #f8f8f8;
+  }
+
+  .player-identifier {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    color: white;
+  }
+
+  .player1 .player-identifier {
+    background-color: #2196F3;
+  }
+
+  .player2 .player-identifier {
+    background-color: #FF5722;
+  }
+
+  .click-effect {
+    position: absolute;
+    pointer-events: none;
+    border-radius: 50%;
+    animation: clickEffect 0.5s forwards;
+    opacity: 0.6;
+  }
+
+  @keyframes clickEffect {
+    0% {
+      transform: scale(0);
+      opacity: 0.7;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 0;
+    }
+  }
+
+  h1 {
+    color: #333;
+  }
+
+  .level-up {
+    animation: pulse 1s;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+  }
+
+  .game-sections {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .section {
+    flex: 1;
+    min-width: 300px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    margin-bottom: 20px;
+  }
+
+  .upgrade-item, .achievement-item {
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s;
+  }
+
+  .upgrade-item:hover {
+    background-color: #f0f0f0;
+  }
+
+  .upgrade-item.disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .buy-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .buy-button:hover {
+    background-color: #45a049;
+  }
+
+  .buy-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+
+  .achievement-item.unlocked {
+    background-color: #e7f7e7;
+    border-left: 4px solid #4CAF50;
+  }
+
+  .achievement-item.locked {
+    background-color: #f0f0f0;
+    border-left: 4px solid #cccccc;
+    color: #777;
+  }
+
+  .upgrade-info, .achievement-info {
+    text-align: left;
+  }
+  
+  .upgrade-level {
+    font-size: 0.8em;
+    color: #666;
+  }
+  
+  .notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 100;
+  }
+  
+  .notification.show {
+    opacity: 1;
+  }
+
+  .player-stats {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .player-stat {
+    flex: 1;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .player-stat.player1 {
+    border-top: 5px solid #2196F3;
+  }
+
+  .player-stat.player2 {
+    border-top: 5px solid #FF5722;
+  }
+
+  .player-stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .player-stat-content {
+    display: flex;
+    gap: 10px;
+  }
+
+  .player-stat-item {
+    flex: 1;
+    text-align: center;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+  }
+
+  .player-stat-label {
+    font-size: 0.8em;
+    color: #666;
+  }
+
+  .player-stat-value {
+    font-size: 1.2em;
+    font-weight: bold;
+  }
+
+  .player-contribution {
+    height: 5px;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 10px;
+  }
+
+  .player1-contribution {
+    height: 100%;
+    background-color: #2196F3;
+    float: left;
+  }
+
+  .player2-contribution {
+    height: 100%;
+    background-color: #FF5722;
+    float: right;
+  }
+
+  .mode-selection {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px 0;
+  }
+
+  .mode-button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+  }
+
+  .mode-button.active {
+    background-color: #4CAF50;
+    color: white;
+  }
+
+  .mode-button:not(.active) {
+    background-color: #e0e0e0;
+    color: #333;
+  }
+
+  .tab-buttons {
+    display: flex;
+    margin-bottom: 15px;
+  }
+
+  .tab-button {
+    flex: 1;
+    padding: 10px;
+    background-color: #e0e0e0;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+  }
+
+  .tab-button:first-child {
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+  }
+
+  .tab-button:last-child {
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+  }
+
+  .tab-button.active {
+    background-color: #4CAF50;
+    color: white;
+  }
+
+  .tab-content {
+    display: none;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  .synergy-upgrade {
+    background-color: #e3f2fd;
+    border-left: 4px solid #2196F3;
+  }
+
+  /* Media Queries for responsive design */
+  @media (max-width: 768px) {
+    .click-areas {
+      flex-direction: column;
+    }
+    
+    .player-stats {
+      flex-direction: column;
+    }
+  }
+
+  .team-bonus {
+    background-color: #e8f5e9;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px 0;
+    text-align: center;
+    font-weight: bold;
+    border: 1px dashed #4CAF50;
+  }

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo Clicker Cooperativo Online</title>
+  <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
+  <link rel="stylesheet" href="clickerCoop.css">
+</head>
+<body>
+  <div class="game-container">
+    <h1>Clicker Cooperativo Online</h1>
+    
+    <div class="player-setup">
+      <h2>Jogadores</h2>
+      <div class="player-list" id="player-list"></div>
+      <div class="player-controls">
+        <input type="text" class="player-input" id="player-name" placeholder="Seu nome">
+        <select id="player-role" class="player-input">
+          <option value="clicker">Clicker (Cliques +20%)</option>
+          <option value="upgrader">Upgrader (Upgrades -15%)</option>
+          <option value="supporter">Supporter (Bônus para equipe)</option>
+        </select>
+        <button class="buy-button" id="add-player">Adicionar Jogador</button>
+        <button class="buy-button" id="switch-player">Alternar Jogador</button>
+      </div>
+    </div>
+    
+    <div class="team-goal-section">
+      <h2>Objetivo da Equipe: Nível <span id="team-goal">5</span></h2>
+      <div>Progresso: <span id="team-progress">1</span>/<span id="team-goal-display">5</span></div>
+      <div class="progress-container">
+        <div class="progress-bar" id="team-progress-bar"></div>
+      </div>
+      <div class="bonus-message" id="team-bonus-message">
+        Trabalhem juntos para ganhar bônus para toda a equipe!
+      </div>
+    </div>
+    
+    <div class="stats">
+      <div class="stat-box">
+        <h3>Jogador</h3>
+        <div id="active-player">-</div>
+      </div>
+      <div class="stat-box">
+        <h3>Nível</h3>
+        <div id="level">1</div>
+      </div>
+      <div class="stat-box">
+        <h3>Cliques</h3>
+        <div id="clicks">0</div>
+      </div>
+      <div class="stat-box">
+        <h3>Meta</h3>
+        <div id="target">10</div>
+      </div>
+      <div class="stat-box">
+        <h3>Moedas</h3>
+        <div id="coins">0</div>
+      </div>
+      <div class="stat-box">
+        <h3>Poder de Clique</h3>
+        <div id="click-power">1</div>
+      </div>
+    </div>
+    
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    
+    <div class="click-area" id="click-area">
+      Clique aqui ou pressione "Espaço"!
+    </div>
+    
+    <div class="section">
+      <h2>Contribuição dos Jogadores</h2>
+      <div id="contribution-container"></div>
+    </div>
+    
+    <div class="game-sections">
+      <div class="section">
+        <h2>Upgrades</h2>
+        <div id="upgrades-container"></div>
+      </div>
+      
+      <div class="section">
+        <h2>Objetivos</h2>
+        <div id="achievements-container"></div>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2>Log de Atividades</h2>
+      <div id="chat-container" class="chat-container"></div>
+    </div>
+  </div>
+  
+  <div class="notification" id="notification"></div>
+  <script src="clickerCoop.js"></script>
+</body>
+</html>
